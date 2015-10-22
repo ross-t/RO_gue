@@ -11,9 +11,16 @@ changes:
 - not entirely non-functional UI
 - enemy ai but currently with no pathing
 
+v 1.1
+changes:
+- generally cleaned up the RO_gue.py
+- new phasing mechanic added to shift between floors with r and f
+- small performance optimizations
+- enemies now sleep until they've spotted the player
+- temporary ASCII map input used until procedural map generation is finished
+
 to do:
-- improve world generation
+- procedural generation
 - visualization with something besides terminal
-- support multiple levels
 - improve enemy ai
 - obscure view with obstacles
