@@ -21,6 +21,10 @@ changes:
 
 to do:
 - procedural generation
-- visualization with something besides terminal
+- visualization with something besides terminal (especially to make phasing clearer)
+- improve phasing mechanics (i.e. require items to use so they can't be spammed, add cooldown, etc.)
 - improve enemy ai
 - obscure view with obstacles
+- add in traps
+- add in support for fluid dynamics to support gas spread
+- determine how to handle phasing in on solid walls

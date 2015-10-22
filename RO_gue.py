@@ -191,7 +191,7 @@ def render():
 	print(color('+ ','grey') * (view_range * 2 + 3))
 	#Displays the HERO's current status
 	print('')
-	print('Location  : [%s, %s] on depth %s]' %(str(HERO.x), str(HERO.y), str(HERO.depth)))
+	print('Location  : [%s, %s] on depth %s' %(str(HERO.x), str(HERO.y), str(HERO.depth)))
 	print('Inventory : [%s]'	%(' '.join(HERO.inventory)))
 	print('Power	  : [%s%s]'  %('+' * HERO.get_power(), '_' * (HERO.base_power - HERO.get_power())))
 	print('Toughness : [%s%s]'  %('+' * HERO.get_toughness(), '_' * (HERO.base_toughness - HERO.get_toughness())))
