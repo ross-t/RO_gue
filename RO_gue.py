@@ -81,7 +81,10 @@ class entity(object):
 		if self.get_toughness() <= 0:
 			for inventory_item in self.inventory:
 				entities.append(item(self.x, self.y, self.depth, inventory_item))
-			entities.remove(self)
+			if self == HERO:
+				self.alive = False
+			else:
+				entities.remove(self)
 
 	#How the entity is represented
 	def __repr__(self):
