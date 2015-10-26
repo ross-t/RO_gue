@@ -18,13 +18,18 @@ changes:
 - small performance optimizations
 - enemies now sleep until they've spotted the player
 - temporary ASCII map input used until procedural map generation is finished
+- added slightly more intelligent ai
+
+v 1.2
+changes:
+- performance improvements as only entities on the current floor(s) are loaded
+- procedural floor generation added
 
 to do:
 - procedural generation
-- visualization with something besides terminal (especially to make phasing clearer)
-- improve phasing mechanics (i.e. require items to use so they can't be spammed, add cooldown, etc.)
 - improve enemy ai
 - obscure view with obstacles
 - add in traps
 - add in support for fluid dynamics to support gas spread
-- determine how to handle phasing in on solid walls
+- improve phasing mechanics (i.e. require items to use so they can't be spammed, add cooldown, effects when phasing into walls, etc.)
+- visualization with something besides terminal (especially to make phasing clearer)

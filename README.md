@@ -10,6 +10,6 @@ Current graphics are handled in OS X terminal.
 
 Movement is handled as wasd followed by enter between inputs.
 
-ASCII map input as a current placeholder to procedural generation.
+Procedural map generation.
 
-Basic enemy AI with no pathing.
+Basic enemy AI.
