@@ -1,1 +1,0 @@
-# name, symbol, min_depth, max_depth

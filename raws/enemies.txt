@@ -1,2 +1,0 @@
-# name, symbol, item_pool, base_power, base_toughness, speed, min_depth, max_depth
-item, $, 
