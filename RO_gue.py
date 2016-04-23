@@ -1,5 +1,8 @@
 #RO_gue
 
+# currently in progress:
+# making raw files for items and other entities
+
 import math
 import random
 
@@ -9,33 +12,26 @@ import random
 
 #The radius around the HERO that will be rendered by the render function
 view_range = 15
-
 #Length of phasing event
 phasing_length = 5
-
 #Chance each turn for entity in view to awaken if not awake
 awaken_chance = 1
-
 #Length of the log display on screen
 log_length = 5
-
 #Size within which the world will try to place the dungeon
 floor_size = 50
-
 #Mininum and maximum room side dimension
 room_min = 5
 room_max = 10
-
 #The number of room attempts made in floor generation
 room_attempts = 50
-
 #Number of enemies and items spawned per floor
 enemy_spawn = 15
 item_spawn = 2
 
-#Enemies and items that can be spawned on floors
-enemy_list = ['k']
-item_list = ['$']
+# paths to 
+enemies_path = 'raws.enemies.txt'
+items_path = 'raws.items.txt'
 
 ##################
 #World Generation#
@@ -273,7 +269,7 @@ class log(object):
 def color(input_text, input_color):
 	#List of colors to be referenced by the color function
 	colors = {
-	'black'  :'\033[00m',
+	'black'  :'\033[01m',
 	'grey'   :'\033[90m',
 	'white'  :'\033[97m',
 	'blink'  :'\033[05m',
