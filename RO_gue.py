@@ -1,6 +1,6 @@
 # RO_gue
 
-#add UI for mage inventory
+#add UI for hero inventory
 
 import random
 import sys
@@ -8,23 +8,23 @@ import tty
 import termios
 
 # parameters
-seed = 123
+seed = 0
+
 draw_radius = 7
 draw_diameter = 2 * draw_radius + 1
-max_inventory = 10
 
 class area(object):
   def __init__(self):
     self.entities = {}
-    # all entities within draw_radius of the MAGE
+    # all entities within draw_radius of the HERO
     self.loaded_frame = None
     self.loaded_list = None
     self.elapsed_time = 0
 
   def load_entities(self):
     frame = list(list(None for x in range(draw_diameter)) for y in range(draw_diameter))
-    y_range = range(MAGE.y - draw_radius, MAGE.y + draw_radius)
-    x_range = range(MAGE.x - draw_radius, MAGE.x + draw_radius)
+    y_range = range(HERO.y - draw_radius, HERO.y + draw_radius)
+    x_range = range(HERO.x - draw_radius, HERO.x + draw_radius)
     for y_index, y_value in enumerate(y_range):
       for x_index, x_value in enumerate(x_range):
         try:
@@ -36,9 +36,9 @@ class area(object):
     self.loaded_list = [item for sublist in frame for item in sublist if item != None]
 
 class entity(object):
-  def __init__(self, x, y, name, symbol, color, speed, alive, entity_type, max_energy, regeneration, power, inventory):
-    self.x = x
+  def __init__(self, y, x, name, symbol, color, speed, alive, entity_type, max_energy, regeneration, power, inventory):
     self.y = y
+    self.x = x
     self.name = name
     self.symbol = symbol
     self.color = color
@@ -73,6 +73,7 @@ class entity(object):
 
     # if there are no other entities present, then moves
     except KeyError:
+      print('move')
       WORLD.entities[(interact_y, interact_x)] = self
       del WORLD.entities[self.y, self.x]
       self.y, self.x = interact_y, interact_x
@@ -94,40 +95,44 @@ class entity(object):
 
   def drop_items(self):
     drop_attempts = 0
-    drop_radius = 5
-    while len(self.inventory) > 0 and drop_attempts > 10:
+    drop_radius = 2
+    while len(self.inventory) > 0 and drop_attempts < 10:
       for item in self.inventory:
-        y_drop = self.y + random.randrange(-draw_radius, draw_radius)
-        x_drop = self.x + random.randrange(-draw_radius, draw_radius)
+        y_drop = self.y + random.randrange(-drop_radius, drop_radius)
+        x_drop = self.x + random.randrange(-drop_radius, drop_radius)
         # if there are no obstructions then it places the item
         try:
           obstruction = WORLD.entities[(y_drop, x_drop)]
           drop_attempts += 1 
         except KeyError:
           WORLD.entities[(y_drop, x_drop)] = item
+          item.y, item.x = y_drop, x_drop
           self.inventory.remove(item)
 
+  def __repr__(self):
+    return self.name
+
 class wall(entity):
-  def __init__(self, x, y):
-    entity.__init__(self, x = x, y = y, name = 'wall', symbol = '#', color = 'black', 
+  def __init__(self, y, x):
+    entity.__init__(self, y = y, x = x, name = 'wall', symbol = '#', color = 'black', 
                     speed = -1, alive = False, entity_type = 'wall', max_energy = 100,
-                    regeneration = 0, power = 0, inventory = [])
+                    regeneration = None, power = None, inventory = None)
 
 class item(entity):
-  def __init__(self, x, y, name, symbol):
-    entity.__init__(self, x = x, y = y, name = name, symbol = symbol, color = 'green', 
-                    speed = -1, alive = False, entity_type = 'item', max_energy = 100,
-                    regeneration = 0, power = 0, inventory = [])
+  def __init__(self, y, x, name, symbol):
+    entity.__init__(self, y = y, x = x, name = name, symbol = symbol, color = 'green', 
+                    speed = -1, alive = False, entity_type = 'item', max_energy = 50,
+                    regeneration = None, power = None, inventory = None)
 
 class kobold(entity):
-  def __init__(self, x, y):
-    entity.__init__(self, x = x, y = y, name = 'kobold', symbol = 'k', color = 'red',
-                    speed = 5, alive = True, entity_type = 'creature', max_energy = 100,
-                    regeneration = 1, power = 10, inventory = [item(None, None, 'meat', '&')])
+  def __init__(self, y, x, inventory):
+    entity.__init__(self, y = y, x = x, name = 'kobold', symbol = 'k', color = 'red',
+                    speed = 5, alive = True, entity_type = 'creature', max_energy = 10,
+                    regeneration = 1, power = 10, inventory = inventory)
 
-class mage(entity):
+class hero(entity):
   def __init__(self):
-    entity.__init__(self, x = 0, y = 0, name = 'mage', symbol = 'M', color = 'purple',
+    entity.__init__(self, x = 0, y = 0, name = 'hero', symbol = 'M', color = 'purple',
                     speed = 5, alive = True, entity_type = 'creature', max_energy = 100,
                     regeneration = 2, power = 10, inventory = [item(None, None, 'sword', '!')])
 
@@ -135,7 +140,8 @@ class mage(entity):
     action_complete = False
     while action_complete != True:
       render()
-      print(('\n' + color_text(text = 'INPUT', color = 'default') + '\n').lower())
+      # input prompt
+      print('\n\033[00mINPUT\n')
       current_input = getch()
       action_complete = self.parse_input(user_input = current_input)
     self.regenerate()
@@ -188,10 +194,6 @@ a  s  d      Q : quit
 to attack, walk into enemies
 to pick up items, walk into them
 
-energy is used to fight and cast spells
-energy is depleted by taking damage
-when you run out of energy you die
-
 [press any key to continue]
 """
 
@@ -210,7 +212,6 @@ def color_text(text, color):
     'blue'    :'\033[34m',
     'purple'  :'\033[35m',
     'cyan'    :'\033[36m'}
-
   return colors[color] + text
 
 def render():
@@ -229,32 +230,38 @@ def render():
 
   ui_elements = []
   total_pips = 10 
-  current_pips = int(MAGE.energy / (MAGE.max_energy / total_pips))
-  ui_elements.append('Energy  : [%s%s] %s/%s'  %('+' * current_pips, '_' * (total_pips - current_pips), MAGE.energy, MAGE.max_energy))
-  ui_elements.append('Location: [%s, %s]' %(str(MAGE.x), str(MAGE.y * -1)))
+  current_pips = int(HERO.energy / (HERO.max_energy / total_pips))
+  ui_elements.append('Energy  : [%s%s] %s/%s'  %('+' * current_pips, '_' * (total_pips - current_pips), HERO.energy, HERO.max_energy))
+  ui_elements.append('Location: [%s, %s]' %(str(HERO.x), str(HERO.y * -1)))
   ui_elements.append('Time    : %s' %(WORLD.elapsed_time))
 
-  inventory_elements = []
+  inventory_elements = [' Inventory']
+  for index, item in enumerate(HERO.inventory):
+    inventory_elements.append('  %s %s' %(str(index), item.name))
+
+  for index in range(len(inventory_elements)):
+    map_elements[index] += inventory_elements[index]
 
   # write to terminal
-  print(clear_screen)
-  for line in map_elements + ui_elements:
-    print(line)
+  final_render = '\n'.join([clear_screen] + map_elements + ui_elements)
+  print(final_render)
 
 # initialization
 if seed:
   random.seed(seed)
 
 WORLD = area()
-MAGE = mage()
-WORLD.entities[(MAGE.y, MAGE.x)] = MAGE
+HERO = hero()
+kobold_inventory = [item(None, None, 'meat', '&'), item(None, None, 'meat', '&'), item(None, None, 'meat', '&'), item(None, None, 'meat', '&'),
+                    item(None, None, 'meat', '&'), item(None, None, 'meat', '&'), item(None, None, 'meat', '&'), item(None, None, 'meat', '&')]
+WORLD.entities[(HERO.y, HERO.x)] = HERO
 
 #
 # test area
 #
 
 WORLD.entities[(-5, 0)] = wall(-5, 0)
-WORLD.entities[( 5, 0)] = kobold( 5, 0)
+WORLD.entities[( 5, 0)] = kobold( 5, 0, kobold_inventory)
 
 #
 # /test area
@@ -264,7 +271,7 @@ WORLD.entities[( 5, 0)] = kobold( 5, 0)
 WORLD.load_entities()
 
 # main loop
-while MAGE.alive == True:
+while HERO.alive == True:
   WORLD.elapsed_time += 1
   for entity in WORLD.loaded_list:
     if entity.alive == True:
