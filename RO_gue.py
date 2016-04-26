@@ -214,13 +214,17 @@ def color_text(text, color):
     'cyan'    :'\033[36m'}
   return colors[color] + text
 
+def range_2d(height, width):
+  for y in range(height):
+    for x in range(width):
+      yield y, x
+
 def render():
   WORLD.load_entities()
   render_frame = list(list(color_text('.', 'ltgrey') for x in range(draw_diameter)) for y in range(draw_diameter))
-  for y in range(draw_diameter):
-    for x in range(draw_diameter):
-      if WORLD.loaded_frame[y][x] != None:
-        render_frame[y][x] = color_text(text = WORLD.loaded_frame[y][x].symbol, color = WORLD.loaded_frame[y][x].color)
+  for y, x in range_2d(height = draw_diameter, width = draw_diameter):
+    if WORLD.loaded_frame[y][x] != None:
+      render_frame[y][x] = color_text(text = WORLD.loaded_frame[y][x].symbol, color = WORLD.loaded_frame[y][x].color)
  
   map_elements = []
   map_elements.append(color_text(text = '- ', color = 'dkgrey') * (draw_radius * 2 + 3))
@@ -239,8 +243,8 @@ def render():
   for index, item in enumerate(HERO.inventory):
     inventory_elements.append('  %s %s' %(str(index), item.name))
 
-  for index in range(len(inventory_elements)):
-    map_elements[index] += inventory_elements[index]
+  for index, item in enumerate(inventory_elements):
+    map_elements[index] += item
 
   # write to terminal
   final_render = '\n'.join([clear_screen] + map_elements + ui_elements)
