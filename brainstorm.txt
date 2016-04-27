@@ -1,5 +1,3 @@
-spellweaver
-
 overall feel:
     brogue
     magicka
