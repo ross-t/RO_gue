@@ -33,7 +33,7 @@ class area(object):
                 except KeyError:
                     pass
         self.loaded_frame = frame
-        self.loaded_list = [item for sublist in frame for item in sublist if item not None]
+        self.loaded_list = [item for sublist in frame for item in sublist if item != None]
 
 
 class entity(object):
@@ -143,7 +143,7 @@ class hero(entity):
 
     def take_turn(self):
         action_complete = False
-        while action_complete not True:
+        while action_complete != True:
             render()
             # input prompt
             print('\n\033[00mINPUT\n')
@@ -230,7 +230,7 @@ def render():
     WORLD.load_entities()
     render_frame = list(list(color_text('.', 'ltgrey') for x in range(draw_diameter)) for y in range(draw_diameter))
     for y, x in range_2d(height=draw_diameter, width=draw_diameter):
-        if WORLD.loaded_frame[y][x] not None:
+        if WORLD.loaded_frame[y][x] != None:
             render_frame[y][x] = color_text(text=WORLD.loaded_frame[y][x].symbol, color=WORLD.loaded_frame[y][x].color)
 
     map_elements = []
