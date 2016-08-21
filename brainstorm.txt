@@ -1,2 +1,0 @@
-possible features to add:
-    multiplayer with asyncio/sockets
